@@ -1,19 +1,26 @@
 import React from 'react';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import './App.css';
 import theme from './theme';
-import Gallery from './Gallery';
+import Header from './components/Header';
+import Gallery from './components/Gallery';
+import simpleDetectMobileBrowser from './utils/simpleDetectMobileBrowser';
+import Carousel from './components/Carousel';
+import { CarouselModalProvider } from './contexts/CarouselModalContext';
+
+window.isMobileBrowser = simpleDetectMobileBrowser();
 
 function App() {
   return (
     <>
       <CssBaseline />
-      <MuiThemeProvider theme={theme}>
-        <div>
+      <ThemeProvider theme={theme}>
+        <Header />
+        <CarouselModalProvider>
           <Gallery />
-        </div>
-      </MuiThemeProvider>
+          <Carousel />
+        </CarouselModalProvider>
+      </ThemeProvider>
     </>
   );
 }

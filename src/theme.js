@@ -10,6 +10,9 @@ const theme = createMuiTheme({
     secondary: {
       main: pink[100],
     },
+    background: {
+      default: red[100],
+    }
   },
 });
 
