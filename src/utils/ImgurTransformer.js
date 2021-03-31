@@ -1,4 +1,4 @@
-class ImgurTransformer {
+export default class ImgurTransformer {
   static transform(url, options = { thumbnail: false }) {
     const { thumbnail } = options;
     let transformedUrl = 'https://i.imgur.com/';
@@ -31,5 +31,3 @@ class ImgurTransformer {
     return null;
   }
 }
-
-module.exports = ImgurTransformer;
