@@ -5,8 +5,6 @@ export default class ImgurTransformer {
     const imgurRegex = /.*imgur\.com.*/;
     const suffixRegex = /.*((?<suffix>\.(jpe?g|png|webp|gif)))$/;
 
-    if (!thumbnail) return url;
-
     if (imgurRegex.test(url)) {
       const result = /.*imgur\.com\/(?<imageUrl>.*)/.exec(url);
       if (result) {

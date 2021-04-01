@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useContext } from 'react';
+import format from 'date-fns/format';
 import classnames from 'classnames';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -66,6 +66,7 @@ const useStyles = makeStyles(
       padding: '0 4px',
     },
     'thumbnail-image': {
+      cursor: 'pointer',
       display: 'inline-block',
       width: 160,
       height: 160,
@@ -78,6 +79,10 @@ const useStyles = makeStyles(
       },
     },
     counter: {
+      color: 'white',
+      padding: 12,
+    },
+    date: {
       color: 'white',
       padding: 12,
     },
@@ -97,22 +102,25 @@ function Carousel() {
   useEffect(() => {
     async function loadData() {
       const postData = await getPost(carouselModalContext.postId);
-      setData(postData);
+      setData({ ...postData, createDate: new Date(postData.createDate) });
     }
     if (carouselModalContext.open) {
       loadData();
     }
   }, [carouselModalContext]);
 
-  function left() {
+  function left(e) {
+    e.stopPropagation();
     setFocus(forcus - 1);
   }
 
-  function right() {
+  function right(e) {
+    e.stopPropagation();
     setFocus(forcus + 1);
   }
 
-  function close() {
+  function close(e) {
+    e.stopPropagation();
     setFocus(0);
     carouselModalContext.setCarouseModal({
       open: false,
@@ -120,7 +128,8 @@ function Carousel() {
     });
   }
 
-  function select(index) {
+  function select(e, index) {
+    e.stopPropagation();
     setFocus(index);
   }
 
@@ -132,7 +141,7 @@ function Carousel() {
       })}
       style={{ left: `calc(100vw * ${index - forcus} + 50%)` }}
     >
-      <img src={imageUrl} alt={`${data.title}-${index}}`} />
+      <Image src={imageUrl} alt={`${data.title}-${index}}`} />
     </div>
   ));
 
@@ -140,8 +149,8 @@ function Carousel() {
     <div
       key={`thumbnail-${imageUrl}`}
       className={classes['thumbnail-image']}
-      onClick={() => {
-        select(index);
+      onClick={e => {
+        select(e, index);
       }}
     >
       <Image
@@ -154,7 +163,7 @@ function Carousel() {
 
   return (
     <Modal open={carouselModalContext.open}>
-      <div>
+      <div onClick={close}>
         <Grid
           className={classes.title}
           justify="center"
@@ -212,6 +221,9 @@ function Carousel() {
             target="_blank"
             rel="noopener noreferrer"
             href={`https://${data?.link}`}
+            onClick={e => {
+              e.stopPropagation();
+            }}
           >
             <IconButton color="primary" aria-label="link" component="span">
               <Link href={`https://${data?.link}`} />
@@ -221,6 +233,9 @@ function Carousel() {
             target="_blank"
             rel="noopener noreferrer"
             href={data?.imageUrlList[forcus]}
+            onClick={e => {
+              e.stopPropagation();
+            }}
           >
             <IconButton color="primary" aria-label="link" component="span">
               <FullScreen />
@@ -231,10 +246,15 @@ function Carousel() {
           } / ${
             data?.imageUrlList ? data.imageUrlList.length : 0
           }`}</Typography>
+          <Typography variant="body2" className={classes.date}>
+            {data?.createDate
+              ? format(data.createDate, 'yyyy-MM-dd hh:mm:ss')
+              : null}
+          </Typography>
         </Grid>
-        <div className={classes.thumbnail}>
+        <Grid className={classes.thumbnail}>
           <span style={{ display: 'inline-flex' }}>{thumbnails}</span>
-        </div>
+        </Grid>
       </div>
     </Modal>
   );
