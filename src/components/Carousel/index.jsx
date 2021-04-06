@@ -2,20 +2,17 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState, useEffect, useContext } from 'react';
 import format from 'date-fns/format';
-import classnames from 'classnames';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Modal from '@material-ui/core/Modal';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Link from '@material-ui/icons/Link';
 import Clear from '@material-ui/icons/Clear';
 import FullScreen from '@material-ui/icons/Fullscreen';
 import CarouselModalContext from '../../contexts/CarouselModalContext';
 import Image from '../Image';
+import Main from './Main';
 
 import getPost from '../../apis/getPost';
 
@@ -31,28 +28,6 @@ const useStyles = makeStyles(
       position: 'absolute',
       top: 0,
       right: 0,
-    },
-    main: {
-      position: 'relative',
-      height: 'calc(100vh - 48px - 48px - 180px)',
-    },
-    image: {
-      position: 'absolute',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '60%',
-      height: '100%',
-      transform: 'translateX(-50%)',
-      transition: 'left 1s',
-      '& > img': {
-        maxWidth: '100%',
-        maxHeight: '100%',
-        objectFit: 'contain',
-      },
-    },
-    'image-fullWidth': {
-      width: '100%',
     },
     operations: {
       height: 48,
@@ -94,9 +69,8 @@ const useStyles = makeStyles(
 
 function Carousel() {
   const classes = useStyles();
-  const isMatchMaxWidth = useMediaQuery('(max-width: 500px)');
   const [data, setData] = useState(null);
-  const [forcus, setFocus] = useState(0);
+  const [focusIndex, setFocusIndex] = useState(0);
   const carouselModalContext = useContext(CarouselModalContext);
 
   useEffect(() => {
@@ -110,18 +84,22 @@ function Carousel() {
   }, [carouselModalContext]);
 
   function left(e) {
-    e.stopPropagation();
-    setFocus(forcus - 1);
+    if (e) {
+      e.stopPropagation();
+    }
+    setFocusIndex(focusIndex - 1);
   }
 
   function right(e) {
-    e.stopPropagation();
-    setFocus(forcus + 1);
+    if (e) {
+      e.stopPropagation();
+    }
+    setFocusIndex(focusIndex + 1);
   }
 
   function close(e) {
     e.stopPropagation();
-    setFocus(0);
+    setFocusIndex(0);
     carouselModalContext.setCarouseModal({
       open: false,
       postId: null,
@@ -130,20 +108,8 @@ function Carousel() {
 
   function select(e, index) {
     e.stopPropagation();
-    setFocus(index);
+    setFocusIndex(index);
   }
-
-  const images = data?.imageUrlList.map((imageUrl, index) => (
-    <div
-      key={`image-${imageUrl}`}
-      className={classnames(classes.image, {
-        [classes['image-fullWidth']]: isMatchMaxWidth,
-      })}
-      style={{ left: `calc(100vw * ${index - forcus} + 50%)` }}
-    >
-      <Image src={imageUrl} alt={`${data.title}-${index}}`} />
-    </div>
-  ));
 
   const thumbnails = data?.imageUrlList.map((imageUrl, index) => (
     <div
@@ -163,7 +129,7 @@ function Carousel() {
 
   return (
     <Modal open={carouselModalContext.open}>
-      <div onClick={close}>
+      <div>
         <Grid
           className={classes.title}
           justify="center"
@@ -181,41 +147,18 @@ function Carousel() {
             <Clear />
           </IconButton>
         </Grid>
-        <Grid
-          className={classes.main}
-          container
-          justify="space-between"
-          alignItems="center"
-        >
-          {images}
-          <IconButton
-            color="primary"
-            aria-label="previous"
-            component="span"
-            onClick={left}
-            disabled={forcus === 0}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
-          <IconButton
-            color="primary"
-            aria-label="next"
-            component="span"
-            onClick={right}
-            disabled={
-              data?.imageUrlList
-                ? forcus === data.imageUrlList.length - 1
-                : true
-            }
-          >
-            <ChevronRightIcon />
-          </IconButton>
-        </Grid>
+        <Main
+          data={data}
+          focusIndex={focusIndex}
+          onClickPrevous={left}
+          onClickNext={right}
+        />
         <Grid
           className={classes.operations}
           container
           justify="center"
           alignItems="center"
+          onClick={close}
         >
           <a
             target="_blank"
@@ -232,7 +175,7 @@ function Carousel() {
           <a
             target="_blank"
             rel="noopener noreferrer"
-            href={data?.imageUrlList[forcus]}
+            href={data?.imageUrlList[focusIndex]}
             onClick={e => {
               e.stopPropagation();
             }}
@@ -242,7 +185,7 @@ function Carousel() {
             </IconButton>
           </a>
           <Typography variant="body2" className={classes.counter}>{`${
-            forcus + 1
+            focusIndex + 1
           } / ${
             data?.imageUrlList ? data.imageUrlList.length : 0
           }`}</Typography>
@@ -252,7 +195,7 @@ function Carousel() {
               : null}
           </Typography>
         </Grid>
-        <Grid className={classes.thumbnail}>
+        <Grid className={classes.thumbnail} onClick={close}>
           <span style={{ display: 'inline-flex' }}>{thumbnails}</span>
         </Grid>
       </div>

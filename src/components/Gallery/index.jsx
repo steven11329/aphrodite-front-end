@@ -11,6 +11,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Image from '../Image';
 import getPosts from '../../apis/getPosts';
 import CarouselModalContext from '../../contexts/CarouselModalContext';
+import useInfiniteScroll from '../../hooks/useInfiniteScroll';
 
 const useStyles = makeStyles(
   () => ({
@@ -61,7 +62,7 @@ export default function Gallery() {
   const [data, setData] = useState([]);
   const [skip, setSkip] = useState(20);
   const [isLoading, setIsLoading] = useState(true);
-  const [isReachBottom, setIsReachBottom] = useState(false);
+  const [isReachBottom, setIsReachBottom] = useInfiniteScroll('gallery');
 
   useEffect(() => {
     getPosts()
@@ -86,18 +87,7 @@ export default function Gallery() {
           setIsLoading(false);
         });
     }
-  }, [isReachBottom, isLoading, skip, data]);
-
-  useEffect(() => {
-    const el = document.getElementById('gallery');
-    function onScroll() {
-      if (el.clientHeight + el.scrollTop >= el.scrollHeight) {
-        setIsReachBottom(true);
-      }
-    }
-    el.addEventListener('scroll', onScroll);
-    return () => el.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [isReachBottom, setIsReachBottom, isLoading, skip, data]);
 
   return (
     <div id="gallery" className={classnames(classes.root)}>
