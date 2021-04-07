@@ -90,8 +90,11 @@ function Main({ data, focusIndex, onClickPrevous, onClickNext }) {
     function move(e) {
       if (locked) {
         const dx = unify(e).clientX - x0;
-        const s = Math.sign(dx);
-        setDirection(s);
+        const sign = Math.sign(dx);
+        const distance = +((sign * dx) / element.clientWidth).toFixed(2);
+        if (distance > 0.2) {
+          setDirection(sign);
+        }
         element.style.setProperty('--tx', '0px');
         locked = false;
         x0 = null;

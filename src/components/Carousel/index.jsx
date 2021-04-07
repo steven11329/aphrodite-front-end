@@ -99,6 +99,7 @@ function Carousel() {
 
   function close(e) {
     e.stopPropagation();
+    setData(null);
     setFocusIndex(0);
     carouselModalContext.setCarouseModal({
       open: false,
