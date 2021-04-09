@@ -120,9 +120,7 @@ export default function Gallery() {
                 thumbnail={window.isMobileBrowser}
               />
             )}
-            <GridListTileBar
-              title={<span title={tile.title}>{tile.title}</span>}
-            />
+            <GridListTileBar title={tile.title} aria-label="Article Title" />
           </GridListTile>
         ))}
       </GridList>
