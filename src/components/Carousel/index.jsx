@@ -192,7 +192,7 @@ function Carousel() {
           }`}</Typography>
           <Typography variant="body2" className={classes.date}>
             {data?.createDate
-              ? format(data.createDate, 'yyyy-MM-dd hh:mm:ss')
+              ? format(data.createDate, 'yyyy-MM-dd HH:mm:ss')
               : null}
           </Typography>
         </Grid>
