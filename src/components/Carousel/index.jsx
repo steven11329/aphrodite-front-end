@@ -120,11 +120,7 @@ function Carousel() {
         select(e, index);
       }}
     >
-      <Image
-        src={imageUrl}
-        alt={`thumbnail-${data.title}-${index}}`}
-        thumbnail
-      />
+      <Image src={imageUrl} alt={`thumbnail-${data.title}-${index}}`} />
     </div>
   ));
 
