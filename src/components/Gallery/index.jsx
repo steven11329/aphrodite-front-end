@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import classnames from 'classnames';
+import { format } from 'date-fns';
+import { zhTW } from 'date-fns/locale';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import GridList from '@material-ui/core/GridList';
@@ -12,6 +14,7 @@ import Image from '../Image';
 import getPosts from '../../apis/getPosts';
 import CarouselModalContext from '../../contexts/CarouselModalContext';
 import useInfiniteScroll from '../../hooks/useInfiniteScroll';
+import getLastUpdate from '../../apis/getLastUpdate';
 
 const useStyles = makeStyles(
   () => ({
@@ -49,6 +52,10 @@ const useStyles = makeStyles(
       height: 64,
       margin: '16px 0 0 0',
     },
+    'update-date': {
+      width: '60%',
+      textAlign: 'end',
+    },
   }),
   {
     name: 'Gallery',
@@ -63,6 +70,7 @@ export default function Gallery() {
   const [skip, setSkip] = useState(20);
   const [isLoading, setIsLoading] = useState(true);
   const [isReachBottom, setIsReachBottom] = useInfiniteScroll('gallery');
+  const [lastUpdate, setLastUpdate] = useState('N/A');
 
   useEffect(() => {
     getPosts()
@@ -72,6 +80,11 @@ export default function Gallery() {
       .finally(() => {
         setIsLoading(false);
       });
+    getLastUpdate(1).then(response => {
+      if (response) {
+        setLastUpdate(format(new Date(response), 'PP pp', { locale: zhTW }));
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -91,6 +104,7 @@ export default function Gallery() {
 
   return (
     <div id="gallery" className={classnames(classes.root)}>
+      <p className={classes['update-date']}>上次更新時間：{lastUpdate}</p>
       <GridList
         cellHeight={isMatchMaxWidth ? 160 : 300}
         className={classnames(classes.gridList, {
