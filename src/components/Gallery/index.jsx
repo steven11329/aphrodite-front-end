@@ -24,7 +24,6 @@ const useStyles = makeStyles(
       justifyContent: 'space-around',
       height: 'calc(100vh - 48px)',
       overflow: 'auto',
-      padding: '16px 0',
       margin: '48px auto 0',
     },
     gridList: {
@@ -55,6 +54,11 @@ const useStyles = makeStyles(
     'update-date': {
       width: '60%',
       textAlign: 'end',
+      paddingLeft: 16,
+      paddingRight: 16,
+    },
+    'update-date-fullWidth': {
+      width: '100%',
     },
   }),
   {
@@ -104,7 +108,13 @@ export default function Gallery() {
 
   return (
     <div id="gallery" className={classnames(classes.root)}>
-      <p className={classes['update-date']}>上次更新時間：{lastUpdate}</p>
+      <p
+        className={classnames(classes['update-date'], {
+          [classes['update-date-fullWidth']]: isMatchMaxWidth,
+        })}
+      >
+        上次更新時間：{lastUpdate}
+      </p>
       <GridList
         cellHeight={isMatchMaxWidth ? 160 : 300}
         className={classnames(classes.gridList, {
